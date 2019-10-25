@@ -21,8 +21,7 @@ def actionSquare(event):
         returnList = "["
         for i in range(len(listOfElement)):
             returnList += "["
-            returnList += str(listOfElement[i][0])+","+str(listOfElement[i][1])
-            returnList += ",["+str(listOfElement[i][2][0])+","+str(listOfElement[i][2][1])+","+str(listOfElement[i][2][2])+"]"
+            returnList += str(listOfElement[i][2][0])+","+str(listOfElement[i][2][1])+","+str(listOfElement[i][2][2])
             returnList += "]"
             if(i < 63):
                 returnList += ","
