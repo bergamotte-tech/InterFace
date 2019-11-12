@@ -1,63 +1,11 @@
 
 #----------IMPORTS----------
-		# /!\ TO MINIMZE /!\
+		# TODO: /!\ TO MINIMZE /!\
 import os
 import time
+from sense_hat import SenseHat
 
-#----------DETECTORS----------
-temperatureTriggered, humidityTriggered, shakingTriggered = False
-oldUsbList = []
-oldLength = -1
-
-
-def check_temperature():
-	# temperature = get temperature
-	if (temperature >= 60 temperatureTriggered == False): # corresponds to a new detection (some events can be detected and added but not instantly treated, because a higher priority event was added on top)
-		animationList.add("temperature")
-		temperatureTriggered = True
-
-	elif (temperatureTriggered == True and temperature <= 55): # to avoid multiple consecutive triggers when temperature is switching around 60°C
-			animationList.remove("temperature")
-			temperatureTriggered = False
-
-
-def check_humidity():
-	# humidity = get humidity
-	if (humidity >= 100 and humidityTriggered == False): # arbitrary value of humidity for now
-		animationList.add("humidity")
-		humidityTriggered = True
-
-	elif (humidityTriggered == True and humidity <= 95):
-			animationList.remove("humidity")
-			humidityTriggered = False
-
-
-def check_shaking():
-	# shaking = get shaking value --> we can create it gathering different indicators if needed
-	if (shaking >= 20 and shakingTriggered == False): # arbitrary value of shaking for now
-		animationList.add("shaking")
-		shakingTriggered = True
-
-	elif (shakingTriggered == True and shaking <= 15):
-			animationList.remove("shaking")
-			shakingTriggered = False
-
-
-def check_plug():
-    newUsbList = os.popen("lsusb | awk '{print $6}'").read().split("\n")[:-1] # list of USB IDs stored in an array
-    newLength = len(newUsbList)
-    
-    if (oldLength != -1):
-    	if (newLength != oldLength):
-    		animationList.add("plug") # this animation is guaranteed to be instantly processed, thus does not need a plugTriggered variable. It is removed from the list after it has been drawn
-
-		    if (newLength > oldLength):
-		        os.popen("sound_added.mp3")
-		    elif (newLength < oldLength):
-		        os.popen("sound_removed.mp3")
-    
-    oldUsbList = newUsbList
-    oldLength = len(oldUsbList)
+sense = SenseHat()
 
 
 #----------DATA STRUCTURE----------
@@ -90,14 +38,70 @@ class animationList:
 	def remove(self, animation):
 		animationLevel = switcher1.get(animation)
 		if (self._array[animationLevel][0] == animation):
-			self._array[animationLevel][0] = None
+			self._array[animationLevel][0] = self._array[animationLevel][1]
+			self._array[animationLevel][1] = None
 		else:
 			self._array[animationLevel][1] = None
 
+animationList = animationList()
+
+
+#----------DETECTORS----------
+temperatureTriggered, humidityTriggered, shakingTriggered = False
+oldLength = -1
+
+
+def check_temperature():
+	# TODO: temperature = get temperature
+	if (temperature >= 60 and temperatureTriggered == False): # corresponds to a new detection (some events can be detected and added but not instantly treated, because a higher priority event was added on top)
+		animationList.add("temperature")
+		temperatureTriggered = True
+
+	elif (temperatureTriggered == True and temperature <= 55): # to avoid multiple consecutive triggers when temperature is switching around 60°C
+			animationList.remove("temperature")
+			temperatureTriggered = False
+
+
+def check_humidity():
+	# TODO: humidity = get humidity
+	if (humidity >= 100 and humidityTriggered == False): # arbitrary value of humidity for now
+		animationList.add("humidity")
+		humidityTriggered = True
+
+	elif (humidityTriggered == True and humidity <= 95):
+			animationList.remove("humidity")
+			humidityTriggered = False
+
+
+def check_shaking():
+	# TODO: shaking = get shaking value --> we can create it gathering different indicators if needed
+	if (shaking >= 20 and shakingTriggered == False): # arbitrary value of shaking for now
+		animationList.add("shaking")
+		shakingTriggered = True
+
+	elif (shakingTriggered == True and shaking <= 15):
+			animationList.remove("shaking")
+			shakingTriggered = False
+
+
+def check_plug():
+    newUsbList = os.popen("lsusb | awk '{print $6}'").read().split("\n")[:-1] # list of USB IDs stored in an array
+    newLength = len(newUsbList)
+    
+    if (oldLength != -1):
+    	if (newLength != oldLength):
+    		animationList.add("plug") # this animation is guaranteed to be instantly processed, thus does not need a plugTriggered variable. It is removed from the list after it has been drawn
+
+		    if (newLength > oldLength):
+		        os.popen("sound_added.mp3")
+		    elif (newLength < oldLength):
+		        os.popen("sound_removed.mp3")
+    
+    oldUsbList = newUsbList
+    oldLength = len(oldUsbList)
 
 
 #----------DRAW----------
-alternator = 0
 switcher2 = {
 	"default": draw_default(),
 	"reaction": draw_reaction(),
@@ -122,7 +126,7 @@ def draw(content[]):
 
 
 def draw_default():
-	# draw face
+	# TODO: draw face
 
 
 # def draw_inactive(): OPTIONNAL
@@ -130,23 +134,23 @@ def draw_default():
 
 
 def draw_reaction():
-	# draw face for .4s
+	# TODO: draw face for .4s
 	animationList.remove("plug")
 
 
 def draw_temperature_warning():
-	# draw face
+	# TODO: draw face
 
 
 def draw_humidity_warning():
-	# draw face
+	# TODO: draw face
 
 
 def draw_shaking_warning():
 	if (alternator < 5):
-		# draw face 1
+		# TODO: draw face 1
 	else:
-		# draw face 2
+		# TODO: draw face 2
 
 
 #----------ON/OFF----------
@@ -154,8 +158,7 @@ started = False
 
 def start():
 	if not(started):
-		# create a new thread
-		# create a new animationList
+		# TODO: create a new thread
 		started = True
 		while started:
 			check_temperature()
@@ -170,7 +173,7 @@ def start():
 
 def stop():
 	if started:
-		#kill the threads and reset the changes (leds...)
+		# TODO: kill thread and reset the changes (leds...)
 		started = False
 	else:
 		print("Program not started yet")
