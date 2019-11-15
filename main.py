@@ -1,4 +1,3 @@
-
 #----------IMPORTS----------
 		# TODO: /!\ TO MINIMZE /!\
 import os
@@ -52,7 +51,7 @@ oldLength = -1
 
 
 def check_temperature():
-	# TODO: temperature = get temperature
+    temperature = sense.get_temperature()
 	if (temperature >= 60 and temperatureTriggered == False): # corresponds to a new detection (some events can be detected and added but not instantly treated, because a higher priority event was added on top)
 		animationList.add("temperature")
 		temperatureTriggered = True
@@ -61,9 +60,28 @@ def check_temperature():
 			animationList.remove("temperature")
 			temperatureTriggered = False
 
-
+def checkShake()
+  raw = sense.get_gyroscope_raw()
+  rew = sense.get_accelerometer_raw()
+  x = (raw['x'])
+  y = (raw['y'])
+  z = (raw['z'])
+  a = (rew['x'])
+  b = (rew['y'])
+  c = (rew['z'])
+  print(x)
+  print(y)
+  print(z)
+  print(a)
+  print(b)
+  print(c)
+  if (abs(x)>5 or abs(y)>5 or abs(z)>5) or (abs(a)>2 or abs(b)>2 or abs(c)>2):
+  	return True
+  else
+    return False
+  
 def check_humidity():
-	# TODO: humidity = get humidity
+	humidity = sense.get_humidity()
 	if (humidity >= 100 and humidityTriggered == False): # arbitrary value of humidity for now
 		animationList.add("humidity")
 		humidityTriggered = True
@@ -74,7 +92,7 @@ def check_humidity():
 
 
 def check_shaking():
-	# TODO: shaking = get shaking value --> we can create it gathering different indicators if needed
+	shaking = checkShake()
 	if (shaking >= 20 and shakingTriggered == False): # arbitrary value of shaking for now
 		animationList.add("shaking")
 		shakingTriggered = True
