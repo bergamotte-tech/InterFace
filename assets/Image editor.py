@@ -17,16 +17,19 @@ def actionSquare(event):
         elif y > 2 and y < 7:
             editColor(y-2)
     elif event.x >= 1000 and event.x <=1150 and event.y >= 900 and event.y <= 950:
-        print("-----------------------")
-        returnList = "["
-        for i in range(len(listOfElement)):
-            returnList += "["
-            returnList += str(listOfElement[i][2][0])+","+str(listOfElement[i][2][1])+","+str(listOfElement[i][2][2])
-            returnList += "]"
-            if(i < 63):
-                returnList += ","
-        returnList +="]"
-        print(returnList)
+        exportMessage()
+    
+def exportMessage():
+    print("-----------------------")
+    returnList = "["
+    for i in range(len(listOfElement)):
+        returnList += "["
+        returnList += str(listOfElement[i][2][0])+","+str(listOfElement[i][2][1])+","+str(listOfElement[i][2][2])
+        returnList += "]"
+        if(i < 63):
+            returnList += ","
+    returnList +="]"
+    print(returnList)
     
 def editColor(id):
     global colors
@@ -60,7 +63,7 @@ def createArray():
     for i in range (0,64):
         x = i%8
         y = (int) ((i-i%8)/8)
-        listOfElement[i] = [x, y, [255,255,255]]
+        listOfElement[i] = [x, y, [0,0,0]]
     for i in range(5):
         colors[i] = '#ffffff'
 
