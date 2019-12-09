@@ -3,12 +3,13 @@
 import os
 import time
 from threading import Thread
-# from sense_hat import SenseHat
-# mySenseHat = SenseHat()
+from sense_hat import SenseHat
+mySenseHat = SenseHat()
 
 
 #----------GLOBAL VARIABLES----------
 
+Blank = [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
 DefaultFace = [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[81,72,249],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[81,72,249],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[81,72,249],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[81,72,249],[0,0,0],[0,0,0],[0,0,0],[81,72,249],[81,72,249],[81,72,249],[81,72,249],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
 TemperatureFace = [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[255,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[255,0,0],[0,0,0],[255,0,0],[255,0,0],[0,0,0],[255,0,0],[255,0,0],[0,0,0],[0,0,0],[255,0,0],[255,0,0],[255,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[255,0,0],[255,0,0],[255,255,0],[255,0,0],[255,0,0],[0,0,0],[0,0,0],[255,0,0],[255,0,0],[255,128,0],[255,255,0],[255,0,0],[255,0,0],[0,0,0],[0,0,0],[255,0,0],[255,128,0],[255,255,255],[255,255,255],[255,0,0],[255,0,0],[0,0,0],[0,0,0],[255,0,0],[255,255,0],[255,255,255],[255,128,0],[255,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[255,0,0],[255,255,0],[255,0,0],[0,0,0],[0,0,0],[0,0,0]]
 HumidityFace = [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,255,255],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,255,255],[0,0,0],[0,255,255],[0,255,255],[0,0,0],[0,0,0],[0,255,255],[0,0,0],[0,0,0],[0,0,0],[0,255,255],[0,255,255],[0,255,255],[0,0,0],[0,0,0],[0,255,255],[0,0,0],[0,255,255],[0,255,255],[0,255,255],[0,255,255],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,255,255],[0,255,255],[0,255,255],[0,255,255],[0,255,255],[0,0,0],[0,0,0],[0,0,0],[0,255,255],[0,255,255],[0,255,255],[0,255,255],[0,255,255],[0,0,0],[0,255,255],[0,0,0],[0,255,255],[0,255,255],[0,255,255],[0,255,255],[0,255,255],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,255,255],[0,255,255],[0,0,0],[0,0,0],[0,0,0]]
@@ -70,31 +71,30 @@ class MainThread(Thread):
 
     def __init__(self):
         Thread.__init__(self)
-        self.animationList = MainThread.animationList()
+        self.animation = MainThread.animationList()
         self.alternator = 0
-        self.switcher2 = {
-            "default": MainThread.draw_default(self),
-            "reaction": MainThread.draw_reaction(self),
-            "temperature": MainThread.draw_temperature_warning(self),
-            "humidity": MainThread.draw_humidity_warning(self),
-            "shaking": MainThread.draw_shaking_warning(self),
-        }
 
     def run(self):
-        # TODO: create a new thread
+        global started
         started = True
         while started:
             MainThread.check_temperature(self)
             MainThread.check_humidity(self)
             MainThread.check_shaking(self)
             MainThread.check_plug(self)
-
             MainThread.draw(self, self.animation.getTop())
+            print(self.alternator, " ", self.animation.getTop())
+            time.sleep(0.03)
+        self.clearAll()
+        
+    def clearAll(self):
+        global mySenseHat
+        mySenseHat.set_pixels(Blank)
 
 
     def check_temperature(self):
         global temperatureTriggered
-        temperature = sense.get_temperature()
+        temperature = mySenseHat.get_temperature()
         
         if (temperature >= 60 and temperatureTriggered == False): # corresponds to a new detection (some events can be detected and added but not instantly treated, because a higher priority event was added on top)
             self.animation.add("temperature")
@@ -107,7 +107,7 @@ class MainThread(Thread):
 
     def check_humidity(self):
         global humidityTriggered
-        humidity = sense.get_humidity()
+        humidity = mySenseHat.get_humidity()
         
         if (humidity >= 100 and humidityTriggered == False): # arbitrary value of humidity for now
             self.animation.add("humidity")
@@ -118,39 +118,29 @@ class MainThread(Thread):
                 humidityTriggered = False
 
 
-    def get_shaking()
-        raw = sense.get_gyroscope_raw()
-        rew = sense.get_accelerometer_raw()
+    def get_shaking(self):
+        raw = mySenseHat.get_gyroscope_raw()
+        rew = mySenseHat.get_accelerometer_raw()
         x = (raw['x'])
         y = (raw['y'])
         z = (raw['z'])
         a = (rew['x'])
         b = (rew['y'])
         c = (rew['z'])
-        # print(x)
-        # print(y)
-        # print(z)
-        # print(a)
-        # print(b)
-        # print(c)
-        # if (abs(x)>5 or abs(y)>5 or abs(z)>5) or (abs(a)>2 or abs(b)>2 or abs(c)>2):
-        #     return True
-        # else:
-        #     return False
         acceleration = abs(x)+abs(y)+abs(z)
         rotation = (abs(a)+abs(b)+abs(c))*2.5 # trying to have an equivalent "critical case" value between acceleration and rotation
-        return max(vertical, horizontal)
+        return max(acceleration*10, rotation*10)
 
 
     def check_shaking(self):
         global shakingTriggered
-        shaking = get_shaking()
+        shaking = self.get_shaking()
         
-        if (shaking >= 15 and shakingTriggered == False):
+        if (shaking >= 50 and shakingTriggered == False):
             self.animation.add("shaking")
             shakingTriggered = True
 
-        elif (shakingTriggered == True and shaking <= 8):
+        elif (shakingTriggered == True and shaking <= 25):
             self.animation.remove("shaking")
             shakingTriggered = False
 
@@ -164,11 +154,13 @@ class MainThread(Thread):
             if (newLength != oldLength):
                 self.animation.add("plug") # this animation is guaranteed to be instantly processed, thus does not need a plugTriggered variable. It is removed from the list after it has been drawn
 
-                if (newLength > oldLength):
-                    os.popen("sound_added.mp3")
-                elif (newLength < oldLength):
-                    os.popen("sound_removed.mp3")
-        
+
+        #TODO
+                #if (newLength > oldLength):
+                    #os.popen("sound_added.mp3")
+                #elif (newLength < oldLength):
+                    #os.popen("sound_removed.mp3")
+                
         oldUsbList = newUsbList
         oldLength = len(oldUsbList)
 
@@ -178,7 +170,7 @@ class MainThread(Thread):
         currentTime = round(time.time()*10)
         self.alternator = currentTime - round(currentTime//10)*10 # gets tenth of a second
 
-        if len(content)==2:
+        if content[1]!=None:
             if (self.alternator < 5):
                 singleAnimation = content[0]
             else:
@@ -186,7 +178,17 @@ class MainThread(Thread):
         else:
             singleAnimation = content[0]
 
-        self.switcher2.get(singleAnimation)
+        if(singleAnimation == "default"):
+            MainThread.draw_default(self)
+        elif(singleAnimation == "plug"):
+            MainThread.draw_plug(self)
+        elif(singleAnimation == "temperature"):
+            MainThread.draw_temperature_warning(self)
+        elif(singleAnimation == "humidity"):
+            MainThread.draw_humidity_warning(self)
+        elif(singleAnimation == "shaking"):
+            MainThread.draw_shaking_warning(self)
+
 
     def draw_default(self):
         mySenseHat.set_pixels(DefaultFace)
@@ -221,20 +223,23 @@ def start():
     global main
     if main == None:
         main = MainThread()
+        main.start()
+        print("Program started with success")
     else:
         print("Program already started")
 
-
 def stop():
-    global main
+    global main, started
     if main != None:
+        started = False
         main.join()
-        started = None
+        main = None
+        print("Program ended with success")
     else:
         print("Program not started yet")
 
+#TODO def switchPanelOwner():
+#TODO def symmetry(): -> the drawings are set to their symmetric by changing the y axis value with max-y
 
-message1 = MainThread()
-
-message1.start()
-# message1.join()
+#----------TESTS----------
+start()
