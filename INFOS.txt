@@ -1,6 +1,0 @@
-assets : all the ressources/exemples we need (images, sounds, editors...)
-
-test_name : stores the file that are still under development/not merged into main.py
-
-main.py : this will become our module, containing all necessary functions for the users. The user will be able
-to import this module and use it in parallel of his code

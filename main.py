@@ -2,13 +2,12 @@
 
 import os
 import time
-from threading import Thread
+from threading import Thread, Lock
 from sense_hat import SenseHat
 mySenseHat = SenseHat()
 
 
 #----------GLOBAL VARIABLES----------
-
 Blank = [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
 DefaultFace = [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[81,72,249],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[81,72,249],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[81,72,249],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[81,72,249],[0,0,0],[0,0,0],[0,0,0],[81,72,249],[81,72,249],[81,72,249],[81,72,249],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
 TemperatureFace = [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[255,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[255,0,0],[0,0,0],[255,0,0],[255,0,0],[0,0,0],[255,0,0],[255,0,0],[0,0,0],[0,0,0],[255,0,0],[255,0,0],[255,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[255,0,0],[255,0,0],[255,255,0],[255,0,0],[255,0,0],[0,0,0],[0,0,0],[255,0,0],[255,0,0],[255,128,0],[255,255,0],[255,0,0],[255,0,0],[0,0,0],[0,0,0],[255,0,0],[255,128,0],[255,255,255],[255,255,255],[255,0,0],[255,0,0],[0,0,0],[0,0,0],[255,0,0],[255,255,0],[255,255,255],[255,128,0],[255,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[255,0,0],[255,255,0],[255,0,0],[0,0,0],[0,0,0],[0,0,0]]
@@ -17,8 +16,13 @@ ShakingFace1 = [[0,0,0],[0,128,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,128,0],[0,0
 ShakingFace2 = [[0,0,0],[0,128,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,128,0],[0,0,0],[0,128,0],[0,128,0],[0,128,0],[0,0,0],[0,0,0],[0,128,0],[0,128,0],[0,128,0],[0,0,0],[0,128,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,128,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,128,0],[0,0,0],[0,128,0],[0,0,0],[0,128,0],[0,0,0],[0,0,0],[0,128,0],[0,0,0],[0,128,0],[0,0,0],[0,128,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
 PlugFace = [[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,160],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,160],[0,0,0],[0,0,160],[0,0,0],[0,0,160],[0,0,0],[0,0,0],[0,0,160],[0,0,0],[0,0,160],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,160],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,160],[0,0,0],[0,0,160],[0,0,160],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,160],[0,0,160],[0,0,0],[0,0,0],[0,0,160],[0,0,160],[0,0,160],[0,0,160],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
 
+AllDrawings = [DefaultFace, TemperatureFace, HumidityFace, ShakingFace1, ShakingFace2, PlugFace]
 
-UserCanDraw = False
+DEBUGGING_temperature, DEBUGGING_humidity, DEBUGGING_shaking = False, False, False
+temperature = 0
+humidity = 0
+shaking = 0
+
 temperatureTriggered, humidityTriggered, shakingTriggered = False, False, False
 oldLength = -1
 
@@ -32,6 +36,9 @@ switcher1 = {
 }
 
 main = None
+UserCanDraw = False
+
+lock = Lock()
 
 
 #----------MAIN CLASS----------
@@ -75,15 +82,19 @@ class MainThread(Thread):
         self.alternator = 0
 
     def run(self):
-        global started
+        self.clearAll()
+        global started,UserCanDraw
         started = True
         while started:
-            MainThread.check_temperature(self)
-            MainThread.check_humidity(self)
-            MainThread.check_shaking(self)
-            MainThread.check_plug(self)
-            MainThread.draw(self, self.animation.getTop())
-            print(self.alternator, " ", self.animation.getTop())
+            lock.acquire()
+            if(not UserCanDraw):
+                MainThread.check_temperature(self)
+                MainThread.check_humidity(self)
+                MainThread.check_shaking(self)
+                MainThread.check_plug(self)
+                MainThread.draw(self, self.animation.getTop())
+                # print(self.alternator, " ", self.animation.getTop())
+            lock.release()
             time.sleep(0.03)
         self.clearAll()
         
@@ -93,8 +104,11 @@ class MainThread(Thread):
 
 
     def check_temperature(self):
-        global temperatureTriggered
-        temperature = mySenseHat.get_temperature()
+        global temperatureTriggered, temperature
+        if (DEBUGGING_temperature):
+            temperature = 500
+        else:
+            temperature = mySenseHat.get_temperature()
         
         if (temperature >= 60 and temperatureTriggered == False): # corresponds to a new detection (some events can be detected and added but not instantly treated, because a higher priority event was added on top)
             self.animation.add("temperature")
@@ -106,8 +120,11 @@ class MainThread(Thread):
 
 
     def check_humidity(self):
-        global humidityTriggered
-        humidity = mySenseHat.get_humidity()
+        global humidityTriggered, humidity
+        if (DEBUGGING_humidity):
+            humidity = 500
+        else:
+            humidity = mySenseHat.get_humidity()
         
         if (humidity >= 100 and humidityTriggered == False): # arbitrary value of humidity for now
             self.animation.add("humidity")
@@ -133,8 +150,11 @@ class MainThread(Thread):
 
 
     def check_shaking(self):
-        global shakingTriggered
-        shaking = self.get_shaking()
+        global shakingTriggered, shaking
+        if (DEBUGGING_shaking):
+            shaking = 500
+        else:
+            shaking = self.get_shaking()
         
         if (shaking >= 50 and shakingTriggered == False):
             self.animation.add("shaking")
@@ -153,13 +173,10 @@ class MainThread(Thread):
         if (oldLength != -1):
             if (newLength != oldLength):
                 self.animation.add("plug") # this animation is guaranteed to be instantly processed, thus does not need a plugTriggered variable. It is removed from the list after it has been drawn
-
-
-        #TODO
-                #if (newLength > oldLength):
-                    #os.popen("sound_added.mp3")
-                #elif (newLength < oldLength):
-                    #os.popen("sound_removed.mp3")
+                if (newLength > oldLength):
+                    os.popen("aplay plug.wav &")
+                elif (newLength < oldLength):
+                    os.popen("aplay unplug.wav &")
                 
         oldUsbList = newUsbList
         oldLength = len(oldUsbList)
@@ -223,7 +240,7 @@ def start():
     global main
     if main == None:
         main = MainThread()
-        main.start()
+        main.start() #TODO main.run() instead ?
         print("Program started with success")
     else:
         print("Program already started")
@@ -237,9 +254,46 @@ def stop():
         print("Program ended with success")
     else:
         print("Program not started yet")
-
-#TODO def switchPanelOwner():
-#TODO def symmetry(): -> the drawings are set to their symmetric by changing the y axis value with max-y
+        
+def switchPannelOwner(userCanDraw, clear):
+    global UserCanDraw, mySenseHat, Blank
+    lock.acquire()
+    UserCanDraw = userCanDraw
+    lock.release()
+    if(clear and main != None):
+        mySenseHat.set_pixels(Blank)
+    
+def symmetry():
+    global AllDrawings
+    for paint in AllDrawings:
+        for i in range (0,32):
+            temp = paint[i];
+            paint[i] = paint[63-i]
+            paint[63-i] = temp
+            
+def triggerTemperature():
+    global DEBUGGING_temperature
+    DEBUGGING_temperature = True
+    
+def triggerHumidity():
+    global DEBUGGING_humidity
+    DEBUGGING_humidity = True
+    
+def triggerShaking():
+    global DEBUGGING_shaking
+    DEBUGGING_shaking = True
+    
+def untriggerTemperature():
+    global DEBUGGING_temperature
+    DEBUGGING_temperature = False
+    
+def untriggerHumidity():
+    global DEBUGGING_humidity
+    DEBUGGING_humidity = False
+    
+def untriggerShaking():
+    global DEBUGGING_shaking
+    DEBUGGING_shaking = False
 
 #----------TESTS----------
-start()
+

@@ -1,0 +1,20 @@
+----To import the program----
+
+"
+import importlib.util
+spec = importlib.util.spec_from_file_location("module.name", "main.py") #absolute path to main.py
+foo = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(foo)
+"
+
+----Basic commands----
+
+start()	#starts main.py in a new thread
+stop()	#stops the program and clears the sense hat
+
+symmetry()	#displays the symmetric of the faces/symbols
+
+triggerTemperature()	#the temperature event is triggered. Available with Humidity and Shaking
+untriggerTemperature()
+
+switchPannelOwner(userCanDraw, clear)	#the user can keep main.py running while taking ownership of the leds of the sense hat
